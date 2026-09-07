@@ -1,0 +1,103 @@
+# ============================================================
+# Multimodal Fusion System — Central Configuration
+# ============================================================
+
+# ---- Model Paths -------------------------------------------
+satellite_model_path: "cyclone.pth"           # relative to project root
+graphcast_model_path: "models/graphcast_small" # path to GraphCast weights dir
+
+# ---- Satellite Classifier ----------------------------------
+satellite:
+  num_classes: 5
+  class_names:
+    - "Low"
+    - "Moderate"
+    - "Severe"
+    - "Very Severe"
+    - "Extreme"
+  input_size: 224               # image resize target (pixels)
+  embedding_dim: 512            # ResNet18 avgpool output dim
+  normalize_mean: [0.485, 0.456, 0.406]
+  normalize_std:  [0.229, 0.224, 0.225]
+
+# ---- GraphCast / Atmospheric --------------------------------
+graphcast:
+  variables:
+    - "mean_sea_level_pressure"
+    - "10m_u_component_of_wind"
+    - "10m_v_component_of_wind"
+    - "2m_temperature"
+    - "specific_humidity"
+    - "geopotential"
+    - "temperature"
+    - "u_component_of_wind"
+    - "v_component_of_wind"
+  pressure_levels: [850, 500, 250]   # hPa levels for 3D variables
+  forecast_horizons_h: [6, 12, 18, 24]
+
+# ---- Atmospheric Crop Window --------------------------------
+crop:
+  window_deg: 10.0       # degrees ± around cyclone center
+  grid_resolution: 0.25  # degrees (GraphCast native 0.25°)
+  # derived: crop contains (2*window_deg/grid_resolution + 1)^2 ≈ 81×81 grid points
+
+# ---- Atmospheric Encoder ------------------------------------
+atmospheric_encoder:
+  hidden_dim: 256
+  output_dim: 128        # embedding size per forecast horizon
+  dropout: 0.2
+
+# ---- Fusion Model -------------------------------------------
+fusion:
+  satellite_proj_dim: 128
+  atm_proj_dim: 128
+  shared_hidden_dim: 256
+  num_heads: 4           # reserved for future cross-attention
+  dropout: 0.3
+  use_location_embedding: true
+  location_embed_dim: 16
+
+# ---- Prediction Heads ---------------------------------------
+heads:
+  track:
+    hidden_dim: 128
+    num_horizons: 4
+  intensity:
+    hidden_dim: 128
+    num_horizons: 4
+  confidence:
+    hidden_dim: 64
+
+# ---- Detection Gate -----------------------------------------
+detection:
+  cyclone_threshold: 0.5   # minimum cyclone probability to run forecast
+
+# ---- Training -----------------------------------------------
+training:
+  batch_size: 16
+  num_epochs: 50
+  learning_rate: 1.0e-4
+  weight_decay: 1.0e-5
+  patience: 10             # early stopping
+  grad_clip: 1.0
+  loss_weights:
+    track: 1.0
+    intensity: 0.5
+    confidence: 0.2
+  checkpoint_dir: "checkpoints/"
+  log_dir: "logs/"
+
+# ---- Data ---------------------------------------------------
+data:
+  root_dir: "dataset/"
+  satellite_subdir: "satellite_images/"
+  atmospheric_subdir: "graphcast_outputs/"
+  labels_file: "labels.csv"
+  train_split: 0.70
+  val_split:   0.15
+  test_split:  0.15
+  num_workers: 2
+
+# ---- Device -------------------------------------------------
+device: "auto"   # "auto" | "cpu" | "cuda" | "mps"
+seed: 42

@@ -1,0 +1,34 @@
+# Core ML
+torch>=2.1.0
+torchvision>=0.16.0
+
+# Config
+pyyaml>=6.0
+
+# Data / atmospheric
+numpy>=1.24.0
+pandas>=2.0.0
+xarray>=2023.1.0
+netCDF4>=1.6.0
+
+# Image
+Pillow>=10.0.0
+
+# Optional: GraphCast dependencies (JAX-based, install separately)
+# jax>=0.4.20
+# dm-haiku
+# chex
+# jraph
+# graphcast @ https://github.com/deepmind/graphcast/archive/master.zip
+
+# Optional: GDAS data access
+# s3fs>=2023.1.0
+# cfgrib>=0.9.10
+# eccodes>=1.6.0
+
+# Testing
+pytest>=7.4.0
+
+# Notebook
+jupyter>=1.0.0
+ipykernel>=6.0.0

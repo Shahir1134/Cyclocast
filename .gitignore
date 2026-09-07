@@ -1,0 +1,45 @@
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.ipynb_checkpoints/
+.pytest_cache/
+
+# Large Datasets & Model Artifacts (>50MB / >100MB)
+*.nat
+*.grib2
+*.zip
+*.tar
+*.tar.gz
+*.nc
+tmp_*/
+test_download/
+eumetsat_output/*.nat
+eumetsat_output/*.zip
+eumetsat_output/*.npy
+
+# Environment & Credentials
+.env
+.venv
+venv/
+ENV/
+*.key
+*.secret
+credentials
+
+# IDE
+.vscode/
+.idea/
+*.swp
+
+# Node & Frontend
+node_modules/
+frontend/node_modules/
+frontend/dist/
+.vite/
+
+# Databases & local sqlite
+*.db
+*.sqlite3
+cyclocast.db
+backend/cyclocast.db
